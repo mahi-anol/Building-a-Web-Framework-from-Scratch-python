@@ -1,11 +1,11 @@
-from wsgiref.simple_server import make_server
-
+from wsgiref.simple_server import make_server,demo_app
+import json
 
 class HttpStatus:
     OK="200 OK"
 
 class ContentType:
-    TEXT=('Content-type','text/plain')
+    TEXT=('content-type','text/json')
 
 
 
@@ -16,11 +16,17 @@ def my_application(environ,start_response):
     # ]
 
     path=environ.get("PATH_INFO ","/")
-    response_body=f"Responding from my application PATH: {path}" 
+    # response_body=f"Responding from my application PATH: {path}" 
+
+    data=[
+        {"product_id": 1, "product_name":"samsung"},
+        {"product_id": 2,"product_name":"iphone"}
+    ]
+
+    response_body=json.dumps(data)
 
 
-
-    response_text="\n".join(response_body)
+    response_text=''.join(response_body)
     headers=[
         ContentType.TEXT 
     ]
