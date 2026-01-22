@@ -7,8 +7,6 @@ class HttpStatus:
 class ContentType:
     TEXT=('content-type','text/json')
 
-
-
 def my_application(environ,start_response):
     print("In my application")
     # response_body=[
