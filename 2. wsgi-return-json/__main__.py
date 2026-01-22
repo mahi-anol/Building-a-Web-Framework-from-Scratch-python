@@ -8,6 +8,7 @@ class HttpStatus:
 class JsonContentType:
     type=('content-type','text/json')
 
+
 inventory={
 
     "mobile":[
@@ -78,4 +79,3 @@ if __name__=="__main__":
     server=make_server(host=host,port=port,app=wrapped_app)
     print(f"Listening to http://{host}:{port}")
     server.serve_forever()
-    
