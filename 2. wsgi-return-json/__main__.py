@@ -3,9 +3,10 @@ import json
 
 class HttpStatus:
     OK="200 OK"
+    INTERNAL_SERVER_ERROR="500 Internal Server Error"
 
-class ContentType:
-    TEXT=('content-type','text/json')
+class JsonContentType:
+    type=('content-type','text/json')
 
 inventory={
 
@@ -27,27 +28,54 @@ inventory={
     ]
 }
 
+def json_response(response: dict | list[dict],start_response,status=HttpStatus.OK,response_headers=[]):
+    response_body=json.dumps(response)
+    response_headers.append(JsonContentType.type)
+    start_response(status,response_headers)
+    return [response_body.encode("utf-8")]
+
+class Handlers:
+    @staticmethod
+    def generic_exception_handler(environ,start_response,ex:Exception)->list[bytes]:
+        response={
+            "message": f" Unhandled exception occured {str(ex)}"
+        }
+        return json_response(
+            response=response,
+            start_response=start_response,
+            status=HttpStatus.INTERNAL_SERVER_ERROR
+        )
+class ErrorHandlerMiddleware:
+    def __init__(self,app,ExceptionHandler:callable ):
+        self.wrapped_app=app
+        self.ExceptionHandler=ExceptionHandler
+    def __call__(self,envrion,start_response,*args,**kwds):
+        try:
+            return self.wrapped_app(envrion,start_response,*args,**kwds)
+        except Exception as e:
+            return self.ExceptionHandler(envrion,start_response,e)
+           
+
+
+
 def my_application(environ,start_response):
 
     path=environ.get("PATH_INFO","/")
     category=path.split("/")[-1]
 
     products=inventory.get(category,[])
-    response_body=json.dumps(products) 
+    raise RuntimeError("Just a test exception")
+    return json_response(products,start_response)
     
-    response_headers=[
-        ContentType.TEXT 
-    ]
-    status=HttpStatus.OK
 
-    start_response(status,response_headers)
-
-    return [response_body.encode("utf-8")]
 
 
 if __name__=="__main__":
     host="localhost"
     port=8000
-    server=make_server(host=host,port=port,app=my_application)
+
+    wrapped_app=ErrorHandlerMiddleware(app=my_application,ExceptionHandler=Handlers.generic_exception_handler)
+    server=make_server(host=host,port=port,app=wrapped_app)
     print(f"Listening to http://{host}:{port}")
     server.serve_forever()
+    
