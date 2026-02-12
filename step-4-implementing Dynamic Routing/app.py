@@ -7,6 +7,7 @@ from router import RouteManager
 class Application:
     def __init__(self):
         self.routing_manager=RouteManager()
+        
     def __call__(self,environ,start_response,*args,**kwargs):
         return self.routing_manager.dispatch(environ,start_response)
     

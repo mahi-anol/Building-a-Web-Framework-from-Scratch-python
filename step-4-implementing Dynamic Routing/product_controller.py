@@ -6,6 +6,7 @@ from app import app
 def get_products(environ,start_response):
     return json_response(inventory['mobile'],start_response)
 
+
 @app.route('/api/laptop')
 def get_products(environ,start_response):
     return json_response(inventory['laptop'],start_response)

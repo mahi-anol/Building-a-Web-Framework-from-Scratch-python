@@ -3,6 +3,7 @@ from app import app
 from webob import Request,Response
 from helpers import json_response
 from contants import HttpStatus
+
 @app.route('/api/products')
 def get_products(request:Request):
     return Response(json_body=inventory)
