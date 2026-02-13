@@ -55,7 +55,7 @@ class ProductModifyController:
                 status=HttpStatus.NOT_FOUND
             )
         
-@app.route('/api/products/{catagory}')
+@app.route('/api/products/{category}')
 def get_products_by_cat(request:Request,category:str)->Response:
     if category not in inventory:
         return Response(
