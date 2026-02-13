@@ -1,4 +1,4 @@
-from command_handlers import CommonHandlers
+from Framework.command_handlers import CommonHandlers
 from Framework.routing_manager import RouteManager
 from webob import Request,Response
 
@@ -9,7 +9,7 @@ class wsgi_framework:
     def __call__(self,environ,start_response):
         http_request=Request(environ)
         response:Response=self.routing_manager.dispatch(http_request)
-        return response
+        return response(environ,start_response)
     
     def route(self,path:str):
         def decorator(handler):
