@@ -1,6 +1,7 @@
 from wsgiref.simple_server import make_server
-from App import exception_handler_middleware as app, product_controller
-
+from App import exception_handler_middleware as app
+from App.api import product_controller
+from App.view import home_controller
 if __name__=="__main__":
     host="localhost"
     port=8000

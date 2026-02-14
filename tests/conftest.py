@@ -9,9 +9,10 @@ class TFramework(wsgi_framework):
         session=RequestSession()
         session.mount(prefix=base_url,adapter=RequestsWSGIAdapter(app=ErrorHandlerMiddleware(self)))
         return session
+    
 @pytest.fixture
 def app()->TFramework:
-    return TFramework()
+    return TFramework(template_dir="./App/templates")
 
 @pytest.fixture
 def client(app:TFramework):

@@ -1,10 +1,13 @@
 from Framework.command_handlers import CommonHandlers
 from Framework.routing_manager import RouteManager
 from webob import Request,Response
-
+from jinja2 import Environment,FileSystemLoader
+import os
 class wsgi_framework:
-    def __init__(self):
+    def __init__(self,template_dir:str|None="templates"):
         self.routing_manager=RouteManager()
+        self.template_env=Environment(loader=FileSystemLoader(os.path.abspath(template_dir)))
+        
     
     def __call__(self,environ,start_response):
         http_request=Request(environ)
@@ -18,8 +21,13 @@ class wsgi_framework:
         :type handler: callable
         """
         self.routing_manager.register(path,handler)
+
     def route(self,path:str):
         def decorator(handler):
             self.add_route(path,handler)
             return handler
         return decorator
+    
+    def template(self,template_name:str,context:dict)->str:
+        context=context or {}
+        return self.template_env.get_template(template_name).render(**context)
