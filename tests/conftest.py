@@ -15,7 +15,7 @@ class TFramework(wsgi_framework):
 @pytest.fixture
 def app()->TFramework:
     cwd=Path(__file__).resolve().parent
-    app=TFramework(template_dir=f"{cwd}/templates")
+    app=TFramework(template_dir=f"{cwd}/templates",static_dir=f"{cwd}/static")
     app.add_exception_handler(handler=CommonHandlers.generic_exception_handler)
     return app
 
@@ -27,3 +27,7 @@ def client(app:TFramework):
 # def app()->wsgi_framework:
 #     return wsgi_framework()
 
+
+@pytest.fixture
+def static_dir(tmpdir_factory):
+    return tmpdir_factory.mktemp('static')
