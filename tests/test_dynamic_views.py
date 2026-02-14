@@ -1,5 +1,6 @@
 from webob.response import Response
 from tests.constants import BASE_URL
+
 def test_dynamic_dashboard(app,client):
     @app.route("/dashboard")
     def test_handler(req):
