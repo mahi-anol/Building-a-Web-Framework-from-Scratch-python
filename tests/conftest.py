@@ -5,7 +5,7 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 from tests.constants import BASE_URL
 from Framework.middlewares import ErrorHandlerMiddleware
 from pathlib import Path
-
+from Framework.command_handlers import CommonHandlers
 class TFramework(wsgi_framework):
     def test_session(self,base_url=BASE_URL):
         session=RequestSession()
@@ -15,7 +15,9 @@ class TFramework(wsgi_framework):
 @pytest.fixture
 def app()->TFramework:
     cwd=Path(__file__).resolve().parent
-    return TFramework(template_dir=f"{cwd}/templates")
+    app=TFramework(template_dir=f"{cwd}/templates")
+    app.add_exception_handler(handler=CommonHandlers.generic_exception_handler)
+    return app
 
 @pytest.fixture
 def client(app:TFramework):
