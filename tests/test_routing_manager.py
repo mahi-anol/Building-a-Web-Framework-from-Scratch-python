@@ -1,5 +1,4 @@
 import pytest
-<<<<<<< HEAD
 # from Framework import wsgi_framework
 from webob import Response
 from tests.conftest import TFramework
@@ -51,8 +50,3 @@ def test_duplicate_routing_exception(app:TFramework):
 #             return Response(
 #                 text="First Handler"
 #             )
-=======
-
-def test_basic_route_adding(app):
-    @app.route
->>>>>>> main
