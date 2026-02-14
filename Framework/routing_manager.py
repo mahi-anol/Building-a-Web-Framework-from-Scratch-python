@@ -8,7 +8,7 @@ class RouteManager:
 
     def register(self,path,handler):
         if path in self.routes:
-            raise RuntimeError(f"Path: {path} already bind to another handler")
+            raise RuntimeError(f"Path: {path} already bind to another handler.")
         self.routes[path]=handler
 
     def dispatch(self,http_request:Request):

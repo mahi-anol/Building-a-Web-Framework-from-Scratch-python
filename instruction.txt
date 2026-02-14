@@ -1,0 +1,18 @@
+## test
+To run tests, do:
+
+set PYTHONPATH=. 
+then do:
+cmd-> pytest
+
+or cmd-> pytest --cov=. tests/
+
+or python --cov=. --cov-report=html tests/
+
+cd htmlcov
+python -m http.server 9000
+
+## gunicorn
+
+Running with gunicorn:
+gunicorn App.main:app --reload --bind=localhost:8000
