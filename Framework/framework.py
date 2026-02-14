@@ -11,8 +11,15 @@ class wsgi_framework:
         response:Response=self.routing_manager.dispatch(http_request)
         return response(environ,start_response)
     
+    def add_route(self,path:str,handler:callable)->None:
+        """
+        Django Style explicit route registration
+        :type path: str
+        :type handler: callable
+        """
+        self.routing_manager.register(path,handler)
     def route(self,path:str):
         def decorator(handler):
-            self.routing_manager.register(path,handler)
+            self.add_route(path,handler)
             return handler
         return decorator
