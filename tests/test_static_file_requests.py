@@ -25,3 +25,4 @@ def test_static_file_not_exists_request(static_dir):
     client=app.test_session()
     response:Response=client.get(f"{BASE_URL}/{dir_name}/{file_name}")
     assert response.status_code==200
+    
