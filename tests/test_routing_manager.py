@@ -2,7 +2,7 @@ import pytest
 # from Framework import wsgi_framework
 from webob import Response
 from tests.conftest import TFramework
-
+from tests.constants import BASE_URL
 
 
 def test_basic_route_adding(app:TFramework):
@@ -25,6 +25,16 @@ def test_duplicate_routing_exception(app:TFramework):
                 text="First Handler"
             )
 
+def test_explicitly_registered_route(app,client):
+    RESPONSE_TEXT="Hello from test client"
+    
+    def test_handler(req):
+        return Response(text=RESPONSE_TEXT)
+    
+    app.add_route("/test",test_handler)
+
+    response=client.get(f"{BASE_URL}/test")
+    assert response.text==RESPONSE_TEXT
 
 ## mod-1
 # @pytest.fixture

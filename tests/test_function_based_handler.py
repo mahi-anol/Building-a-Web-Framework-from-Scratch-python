@@ -1,7 +1,7 @@
 from webob.response import Response
 from tests.constants import BASE_URL
 import pytest
-def test_client_and_send_request(app,client):
+def test_client_can_send_request(app,client):
     RESPONSE_TEXT="Hello from test client"
     @app.route("/test")
     def test_handler(req):
