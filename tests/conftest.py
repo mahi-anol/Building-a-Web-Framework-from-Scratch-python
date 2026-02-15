@@ -9,14 +9,14 @@ from Framework.command_handlers import CommonHandlers
 class TFramework(wsgi_framework):
     def test_session(self,base_url=BASE_URL):
         session=RequestSession()
-        session.mount(prefix=base_url,adapter=RequestsWSGIAdapter(app=ErrorHandlerMiddleware(self)))
+        session.mount(prefix=base_url,adapter=RequestsWSGIAdapter(app=self))
         return session
     
 @pytest.fixture
 def app()->TFramework:
     cwd=Path(__file__).resolve().parent
     app=TFramework(template_dir=f"{cwd}/templates",static_dir=f"{cwd}/static")
-    app.add_exception_handler(handler=CommonHandlers.generic_exception_handler)
+    # app.add_exception_handler(handler=CommonHandlers.generic_exception_handler)
     return app
 
 @pytest.fixture

@@ -15,7 +15,7 @@ def test_static_file_not_exists_request(static_dir):
     assert response.status_code==404
 
 
-def test_static_file_not_exists_request(static_dir):
+def test_static_file_exists_request(static_dir):
     dir_name="css"
     file_name="style.css"
     asset=static_dir.mkdir(dir_name).join(file_name)
