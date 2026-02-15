@@ -32,19 +32,19 @@ class wsgi_framework:
             response:Response=self.exception_handler(request,e)
         return response
     
-    def add_route(self,path:str,handler:callable)->None:
+    def route(self,path:str,allowed_methods:Optional[list]=None):
+        def decorator(handler):
+            self.add_route(path,handler,allowed_methods)
+            return handler
+        return decorator
+    
+    def add_route(self,path:str,handler:callable,allowed_methods:Optional[list]=None)->None:
         """
         Django Style explicit route registration
         :type path: str
         :type handler: callable
         """
-        self.routing_manager.register(path,handler)
-
-    def route(self,path:str):
-        def decorator(handler):
-            self.add_route(path,handler)
-            return handler
-        return decorator
+        self.routing_manager.register(path,handler,allowed_methods)
     
     def template(self,template_name:str,context:dict)->str:
         context=context or {}
