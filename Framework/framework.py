@@ -5,23 +5,25 @@ from jinja2 import Environment,FileSystemLoader
 import os
 from typing import Optional
 from whitenoise import WhiteNoise
+from Framework.middlewares import Middleware
 class wsgi_framework:
     def __init__(self,template_dir:str|None="templates",static_dir:str="static"):
         self.routing_manager=RouteManager()
         self.template_env=Environment(loader=FileSystemLoader(os.path.abspath(template_dir)))
         self.whitenoise=WhiteNoise(application=self.wsgi_app,root=static_dir)
         self.exception_handler:Optional[callable]=None
+        self.middleware=Middleware(app=self)
 
     def __call__(self,environ,start_response):
         #plugging whitenoise
         return self.whitenoise(environ,start_response)
 
     def wsgi_app(self,environ,start_response):
-        http_request=Request(environ)
-        response=self._handle_request(http_request)
-        return response(environ,start_response)
+        # http_request=Request(environ)
+        # response=self.handle_request(http_request)
+        return self.middleware(environ,start_response)
     
-    def _handle_request(self,request:Request)->Response:
+    def handle_request(self,request:Request)->Response:
         try:
             response:Response=self.routing_manager.dispatch(request)
         except Exception as e:
@@ -50,3 +52,6 @@ class wsgi_framework:
     
     def add_exception_handler(self,handler:callable)->None:
         self.exception_handler=handler
+
+    def add_middleware(self,middleware_cls)->None:
+        self.middleware.add(middleware_cls)
