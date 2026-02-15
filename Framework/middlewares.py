@@ -20,6 +20,7 @@ class Middleware:
     def add(self,middleware_cls)->None:
         logger.info(f"{middleware_cls.__name__}(app={self.app.__class__.__name__})")
         self.app=middleware_cls(app=self.app)
+
     def process_request(self,req:Request)->None:
         logger.info(f"{self.__class__.__name__}::process_request")
     
@@ -64,7 +65,7 @@ class ExecTimeMiddleware(Middleware):
 
 # class ErrorHandlerMiddleware:
 #     def __init__(self,
-#                  app:wsgi_framework,
+#                  app:'wsgi_framework',
 #                  exception_handler:callable=CommonHandlers.generic_exception_handler
 #                 ):
 #         self.wrapped_app=app
