@@ -3,6 +3,7 @@ from webob import Request,Response
 from typing import TYPE_CHECKING
 from Framework.logger import create_logger
 import time
+from Framework.exceptions import ResponseError
 if TYPE_CHECKING:
     from Framework.framework import wsgi_framework
 
@@ -39,6 +40,8 @@ class ErrorHandlerMiddleware(Middleware):
     def handle_request(self,request:Request)->Response:
         try:
             return super().handle_request(request)
+        except ResponseError as e:
+            return CommonHandlers.handle_response_error(request,e)
         except Exception as e:
             return CommonHandlers.generic_exception_handler(request,e)
 
