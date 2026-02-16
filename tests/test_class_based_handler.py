@@ -1,5 +1,8 @@
 from webob import Response
 from tests.constants import BASE_URL
+import pytest
+from Framework.exceptions import MethodNotAllowed
+from Framework.middlewares import ErrorHandlerMiddleware
 def test_class_based_handler_get(app,client):
     response_text="This is a {} request"
     @app.route("/books")
@@ -24,7 +27,8 @@ def test_class_based_handler_method_not_allowed(app,client):
     class BookResource:
         def get(self,req):
             return Response("This is a get request")
-
+    app.add_middleware(ErrorHandlerMiddleware)
+    # with pytest.raises(MethodNotAllowed):
     response=client.post("http://testserver/books")
     assert response.status_code==405
     assert response.json()['message']==exp_response["message"].format('POST')
