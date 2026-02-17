@@ -1,7 +1,7 @@
 from webob import Request, Response
 from Framework.constants import HttpStatus
 import logging
-
+from Framework.exceptions import ResponseError
 logger=logging.getLogger(__name__)
 
 
@@ -35,4 +35,14 @@ class CommonHandlers:
         return Response(
             json_body=response,
             status=HttpStatus.METHOD_NOT_ALLOWED
+        )
+    @staticmethod
+    def handle_response_error(request:Request,exc:ResponseError)->Response:
+        logger.exception(exc)
+        response={
+            "message": exc.message
+        }
+        return Response(
+            json_body=response,
+            status=exc.htto_status
         )

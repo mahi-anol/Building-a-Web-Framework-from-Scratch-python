@@ -3,7 +3,7 @@ from webob.request import Request
 from Framework.command_handlers import CommonHandlers
 import inspect
 from Framework.models import RouteDefination
-
+from Framework.exceptions import MethodNotAllowed
 def normalize_request_url(url:str)->str:
     if url!="/" and url.endswith("/"):
         return url[:-1]
@@ -35,7 +35,8 @@ class RoutingHelper:
         handler_fn=getattr(handler_instance,function_name,None)
 
         if not handler_fn:
-            return RouteDefination(CommonHandlers.method_not_allowed_handler)
+            raise MethodNotAllowed(request)
+            # return RouteDefination(CommonHandlers.method_not_allowed_handler)
         # return handler_fn,kwargs
         return RouteDefination(handler_fn,kwargs=route_def.kwargs)
     
@@ -46,6 +47,7 @@ class RoutingHelper:
             return cls._find_class_based_handler(request,route_def)
         
         if not route_def.is_valid_methods(request.method):
-            return RouteDefination(CommonHandlers.method_not_allowed_handler)
+            raise MethodNotAllowed(request)
+            # return RouteDefination(CommonHandlers.method_not_allowed_handler)
         
         return route_def
