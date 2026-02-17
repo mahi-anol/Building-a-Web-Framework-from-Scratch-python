@@ -3,7 +3,7 @@ from App import app
 from Framework.constants import HttpStatus
 from App.data import inventory
 from App.service.product_service import ProductService
-
+from Framework.models import JSONResponse
 @app.route('/api/products')
 class ProductCreateController:
     def __init__(self):
@@ -65,9 +65,7 @@ def get_products_by_cat(request:Request,category:str)->Response:
             },
             status=HttpStatus.NOT_FOUND
         )
-    return Response(
-        json_body=inventory[category]
-    )
+    return JSONResponse(inventory[category])
 
 @app.route('/api/exception')
 def raise_exception(request:Request):
