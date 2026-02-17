@@ -1,11 +1,11 @@
 from webob.response import Response
 from tests.constants import BASE_URL
 import pytest
-from Framework.command_handlers import CommonHandlers
-from Framework.exceptions import MethodNotAllowed
-from Framework.middlewares import ErrorHandlerMiddleware
-from Framework.models import TextResponse,JSONResponse
-from Framework.constants import ContentType
+from mahi_wsgi_web_framework.command_handlers import CommonHandlers
+from mahi_wsgi_web_framework.exceptions import MethodNotAllowed
+from mahi_wsgi_web_framework.middlewares import ErrorHandlerMiddleware
+from mahi_wsgi_web_framework.models import TextResponse,JSONResponse
+from mahi_wsgi_web_framework.constants import ContentType
 from dataclasses import dataclass
 def test_client_can_send_request(app,client):
     RESPONSE_TEXT="Hello from test client"

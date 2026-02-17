@@ -1,5 +1,5 @@
 from webob import Request,Response
-from Framework.middlewares import Middleware
+from mahi_wsgi_web_framework.middlewares import Middleware
 from tests.constants import BASE_URL
 
 

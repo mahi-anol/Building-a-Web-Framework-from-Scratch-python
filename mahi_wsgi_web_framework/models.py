@@ -1,6 +1,6 @@
 from typing import Optional
 import inspect
-from Framework.constants import HttpStatus,ContentType
+from mahi_wsgi_web_framework.constants import HttpStatus,ContentType
 from webob import Response
 from typing import Any,Sequence
 from enum import Enum

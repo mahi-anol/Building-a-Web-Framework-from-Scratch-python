@@ -1,7 +1,7 @@
-from Framework import wsgi_framework
-from Framework.middlewares import ErrorHandlerMiddleware,ReqResLoggingMiddleware,ExecTimeMiddleware
+from mahi_wsgi_web_framework import wsgi_framework
+from mahi_wsgi_web_framework.middlewares import ErrorHandlerMiddleware,ReqResLoggingMiddleware,ExecTimeMiddleware
 from pathlib import Path
-from Framework.command_handlers import CommonHandlers
+from mahi_wsgi_web_framework.command_handlers import CommonHandlers
 
 cwd=Path(__file__).resolve().parent
 app=wsgi_framework(template_dir=f'{cwd}/templates',static_dir=f'{cwd}/static')

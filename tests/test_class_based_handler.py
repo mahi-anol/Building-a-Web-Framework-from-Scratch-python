@@ -1,8 +1,8 @@
 from webob import Response
 from tests.constants import BASE_URL
 import pytest
-from Framework.exceptions import MethodNotAllowed
-from Framework.middlewares import ErrorHandlerMiddleware
+from mahi_wsgi_web_framework.exceptions import MethodNotAllowed
+from mahi_wsgi_web_framework.middlewares import ErrorHandlerMiddleware
 def test_class_based_handler_get(app,client):
     response_text="This is a {} request"
     @app.route("/books")

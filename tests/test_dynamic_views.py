@@ -1,6 +1,6 @@
 from webob.response import Response
 from tests.constants import BASE_URL
-from Framework.models import HTMLResponse
+from mahi_wsgi_web_framework.models import HTMLResponse
 
 def test_dynamic_dashboard(app,client):
     @app.route("/dashboard")
