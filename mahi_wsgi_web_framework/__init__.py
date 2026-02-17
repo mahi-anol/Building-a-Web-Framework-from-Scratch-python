@@ -1,0 +1,1 @@
+from mahi_wsgi_web_framework.framework import wsgi_framework

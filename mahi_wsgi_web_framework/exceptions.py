@@ -1,4 +1,4 @@
-from Framework.constants import HttpStatus
+from mahi_wsgi_web_framework.constants import HttpStatus
 from webob import Request
 class ResponseError(Exception):
     def __init__(self, message:str, http_status:str):

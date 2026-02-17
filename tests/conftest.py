@@ -1,11 +1,11 @@
-from Framework import wsgi_framework
+from mahi_wsgi_web_framework import wsgi_framework
 import pytest
 from requests import Session as RequestSession
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 from tests.constants import BASE_URL
-from Framework.middlewares import ErrorHandlerMiddleware
+from mahi_wsgi_web_framework.middlewares import ErrorHandlerMiddleware
 from pathlib import Path
-from Framework.command_handlers import CommonHandlers
+from mahi_wsgi_web_framework.command_handlers import CommonHandlers
 class TFramework(wsgi_framework):
     def test_session(self,base_url=BASE_URL):
         session=RequestSession()
