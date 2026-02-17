@@ -63,6 +63,31 @@ def test_json_response_from_class_based_data(app,client,name,exp_result):
     assert ContentType.JSON in response.headers["Content-Type"]
 
 
+
+
+def test_json_response_with_list_of_object(app,client):
+    @dataclass
+    class Address:
+        long:float
+        lat:float
+    @dataclass
+    class Person:
+        username:str
+        address:Address
+
+    @app.route('/hello')
+    def hello(req):
+        person=[Person("Bob",address=Address(long=5.5,lat=4.5)),Person("Charlie",Address(long=2.2,lat=3.2))]
+        return JSONResponse(person)
+    # Test multiple parameter values
+    response:Response=client.get(f"{BASE_URL}/hello")
+    # assert response.json()==exp_result
+    assert ContentType.JSON in response.headers["Content-Type"]
+
+
+
+
+
 def test_url_not_found(app,client):
     RESPONSE_TEXT="Hello from test client"
     @app.route("/test")
