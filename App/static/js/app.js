@@ -18,7 +18,7 @@ $(document).ready(function(){
     $("#login-button").on("click", function (event) {
         event.preventDefault();
         payload={
-            username:$("#usernamer").val(),
+            username:$("#username").val(),
             password:$("#password").val(),
         }
 
