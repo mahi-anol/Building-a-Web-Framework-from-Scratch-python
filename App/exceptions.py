@@ -6,3 +6,9 @@ class ResourceNotFoundException(ResponseError):
         super().__init__(message,HttpStatus.METHOD_NOT_ALLOWED)
 
 
+class UnathorizedResponseException(ResponseError):
+    def __init__(self,message="You are not authorized to access this resource"):
+        super().__init__(message,HttpStatus.UNAUTHORIZED)
+
+
+
