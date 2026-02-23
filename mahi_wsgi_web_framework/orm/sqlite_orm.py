@@ -1,4 +1,24 @@
 import sqlite3
+import inspect
+
+class Table:
+    @classmethod
+    def _get_create_sql(cls):
+        CREATE_TABLE_SQL="CREATE TABLE IF NOT EXISTS {name} ({fields});"
+        fields=[]
+        for name,field in inspect.getmembers(cls):
+            if isinstance(field,PrimaryKey):
+                sql=f"{name} {field.sql_type} PRIMARY KEY"
+                if field.auto_increment:
+                    sql+="AUTOINCREMENT"
+                fields.append(sql)
+            elif isinstance(field,ForeignKey):
+                fields.append(f"{name}_id INTEGER")
+            elif isinstance(field,Column):
+                fields.append(f"{name} {field.sql_type}")
+        table_name=cls.__name__.lower()
+        fields=", ".join(fields)
+        return CREATE_TABLE_SQL.format(name=table_name,fields=fields)
 
 class Database:
     def __init__(self, path: str):
@@ -6,10 +26,15 @@ class Database:
         self.connection=sqlite3.Connection(path)
     @property
     def tables(self):
-        return []
+        result_set=self.connection.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()
+        # return result_set
+        return [rs[0] for rs in result_set]
+        # return []
+    
+    def create(self,table:type[Table]):
+        raw_sql=table._get_create_sql()
+        self.connection.execute(raw_sql)
 
-class Table:
-    pass
 
 class Column:
     def __init__(self,column_type):
