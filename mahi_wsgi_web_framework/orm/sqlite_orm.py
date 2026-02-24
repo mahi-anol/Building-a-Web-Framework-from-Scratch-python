@@ -32,6 +32,13 @@ class TableMeta(type):
         attrs["_columns"]=columns
         return super().__new__(cls,name,bases,attrs)
 class Table(metaclass=TableMeta):
+    def __init__(self,**kwargs):
+        self._data={
+            "id":None,
+        }
+        for key,value in kwargs.items():
+            self._data[key]=value
+        self.id=self._data["id"]
     @classmethod
     def _get_create_sql(cls):
         CREATE_TABLE_SQL="CREATE TABLE IF NOT EXISTS {name} ({fields});"
@@ -50,6 +57,42 @@ class Table(metaclass=TableMeta):
         table_name=cls.__name__.lower()
         fields=", ".join(fields)
         return CREATE_TABLE_SQL.format(name=table_name,fields=fields)
+    
+
+    def __getattribute__(self, key):
+        _data=super().__getattribute__("_data")
+        if key in _data:
+            return _data[key]
+
+        return super().__getattribute__(key)
+        
+        
+    
+    def _get_insert_sql(self)->tuple[str,list]:
+        INSERT_SQL="INSERT INTO {name} ({fields}) VALUES ({placeholders});"
+        fields=[]
+        placeholders=[]
+        values=[]
+
+        for name, field in self._columns.items():
+            if isinstance(field,ForeignKey):
+                fields.append(name+"_id")
+                field_value:Table=getattr(self,name)
+                values.append(field_value.id)
+                placeholders.append("?")
+
+            elif isinstance(field,Column):
+                fields.append(name)
+                values.append(getattr(self,name))
+                placeholders.append("?")
+
+        fields=", ".join(fields)
+        placeholders=", ".join(placeholders)
+        table_name=self.__class__.__name__.lower()
+        query=INSERT_SQL.format(
+            name=table_name,fields=fields,placeholders=placeholders
+        )
+        return query,values
 
 class ForeignKey(Column):
     def __init__(self,table:type[Table],column_type=int):

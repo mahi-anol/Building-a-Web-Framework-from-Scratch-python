@@ -10,6 +10,6 @@ class Book(Table):
     id=PrimaryKey()
     title=Column(str)
     published=Column(bool)  
-    Author=ForeignKey(Author)
+    author=ForeignKey(Author)
 
 
