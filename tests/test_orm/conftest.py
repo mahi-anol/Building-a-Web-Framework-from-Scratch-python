@@ -3,7 +3,7 @@ from mahi_wsgi_web_framework.orm.sqlite_orm import Table,PrimaryKey,Column,Forei
 class Author(Table):
     id=PrimaryKey()
     name=Column(str)
-    age=Column(str)
+    age=Column(int)
 
 
 class Book(Table):

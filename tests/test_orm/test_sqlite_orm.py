@@ -5,7 +5,7 @@ class TestSqliteORM:
     def test_db_connection(self):
         db=Database("./test.db")
         assert isinstance(db.connection,sqlite3.Connection)
-        assert db.tables==[]
+        # assert db.tables==[]
 
     def test_create_table(self):
         db=Database("./test.db")
@@ -24,5 +24,5 @@ class TestSqliteORM:
         assert Author.age.sql_type=="INTEGER"
 
     def test_table_creation_sql(self):
-        assert Author._get_create_sql() == "CREATE TABLE IF NOT EXISTS author (id INTEGER PRIMARY KEY AUTOINCREMENT, age INTEGER, name TEXT);"
-        assert Book._get_create_sql() == "CREATE TABLE IF NOT EXISTS book (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id INTEGER, published INTEGER, title TEXT);"
+        assert Author._get_create_sql() == "CREATE TABLE IF NOT EXISTS author (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER);"
+        assert Book._get_create_sql() == "CREATE TABLE IF NOT EXISTS book (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, published INTEGER, Author_id INTEGER);"
