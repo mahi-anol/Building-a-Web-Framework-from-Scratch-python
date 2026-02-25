@@ -31,6 +31,7 @@ class TableMeta(type):
         # cls._columns=columns
         attrs["_columns"]=columns
         return super().__new__(cls,name,bases,attrs)
+    
 class Table(metaclass=TableMeta):
     def __init__(self,**kwargs):
         self._data={
@@ -66,7 +67,11 @@ class Table(metaclass=TableMeta):
 
         return super().__getattribute__(key)
         
-        
+    def __setattr__(self, key, value):
+        super().__setattr__(key,value)
+        if key in self._data:
+            self._data[key]=value
+
     
     def _get_insert_sql(self)->tuple[str,list]:
         INSERT_SQL="INSERT INTO {name} ({fields}) VALUES ({placeholders});"
@@ -93,7 +98,36 @@ class Table(metaclass=TableMeta):
             name=table_name,fields=fields,placeholders=placeholders
         )
         return query,values
+    @classmethod
+    def _get_select_all_sql(cls):
+        SELECT_ALL_SQL='SELECT {fields} FROM {table_name};'
+        fields=[]
+        for name, field in cls._columns.items():
+            if isinstance(field,ForeignKey):
+                fields.append(name+'_id')
+            elif isinstance(field,Column):
+                fields.append(name)
 
+        table_name=cls.__name__.lower()
+        field_names=fields
+        fields=", ".join(fields)
+        sql=SELECT_ALL_SQL.format(table_name=table_name,fields=fields)
+        return sql,field_names
+    
+    @classmethod
+    def _get_select_by_id_sql(cls,id:int):
+        SELECT_ALL_SQL='SELECT {fields} FROM {name} WHERE id=?;'
+        table_name=cls.__name__.lower()
+        fields=[]
+
+        for name, field in cls._columns.items():
+            if isinstance(field,ForeignKey):
+                fields.append(name+'_id')
+            elif isinstance(field,Column):
+                fields.append(name)
+        params=[id]
+        sql=SELECT_ALL_SQL.format(name=table_name,fields=", ".join(fields))
+        return sql,fields,params
 class ForeignKey(Column):
     def __init__(self,table:type[Table],column_type=int):
         self.table=table
@@ -114,3 +148,59 @@ class Database:
     def create(self,table:type[Table]):
         raw_sql=table._get_create_sql()
         self.connection.execute(raw_sql)
+
+    def save(self,table_instance:Table):
+        sql,values=table_instance._get_insert_sql()
+        cursor=self.connection.execute(sql,values)
+        table_instance._data["id"]=cursor.lastrowid
+        # table_instance.id=cursor.lastrowid
+        self.connection.commit()
+
+    # def get_all(self,table_type:type[Table])->list[Table]:
+    #     sql,field_names=table_type._get_select_all_sql()
+    #     rows=self.connection.execute(sql).fetchall()
+    #     result=[]
+    #     for row in rows:
+    #         instance=table_type()
+    #         for field_name,col_value in zip(field_names,row):
+    #             setattr(instance,field_name,col_value)
+    #         result.append(instance)
+    #     return result
+
+    ### Design choice 2
+    def get_all(self,table_type:type[Table])->list[Table]:
+        sql,field_names=table_type._get_select_all_sql()
+        rows=self.connection.execute(sql).fetchall()
+        result=[]
+        for row in rows:
+            kwargs={}
+            for field_name,col_value in zip(field_names,row):
+                if field_name.endswith("_id"):
+                    field_name=field_name[:-3]
+                    f_key:ForeignKey=getattr(table_type,field_name)
+                    f_table_type=f_key.table
+                    f_instance=self.get_by_id(f_table_type,id=col_value)
+                    col_value=f_instance
+                kwargs[field_name]=col_value
+            instance=table_type(**kwargs)
+            result.append(instance)
+        return result
+    
+    def get_by_id(self,table_type:type[Table],id:int)->Table:
+        sql,field_names,params=table_type._get_select_by_id_sql(id)
+        row=self.connection.execute(sql,params).fetchone()
+        if not row:
+            raise Exception(f"Table {table_type.__name__} with id {id} not found")
+        kwargs={}
+        for field_name,col_value in zip(field_names,row):
+            if field_name.endswith("_id"):
+                field_name=field_name[:-3]
+                f_key:ForeignKey=getattr(table_type,field_name)
+                f_table_type=f_key.table
+                f_instance=self.get_by_id(f_table_type,id=col_value)
+                col_value=f_instance
+            kwargs[field_name]=col_value
+        
+        instance=table_type(**kwargs)
+
+        return instance
