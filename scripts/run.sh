@@ -4,7 +4,7 @@
 set -e
 
 DIRECTORY=".venv"
-APP_MODULE="App"
+APP_MODULE="demo_app"
 
 # Activate virtual environment
 echo "🔌 Activating virtual environment"
