@@ -5,7 +5,7 @@ class BookRepository:
    
     def create(self,instance:Book)->Book:
         db.save(instance)
-
+        return instance
     def all(self)->list[dict]:
         return db.get_all(Book)
     
