@@ -6,6 +6,16 @@ A lightweight Python web framework built from scratch using WSGI specifications.
 
 This project is a complete implementation of a web framework written in pure Python. It includes a functional ORM for SQLite databases, a solid routing system, middleware support, template rendering with Jinja2, and static file serving. Several demo applications showcase how to use the framework effectively.
 
+## System Architecture
+
+The framework is organized into distinct layers that work together seamlessly:
+
+![System Architecture Diagram](Assets/System-Architecture.svg)
+
+## Component Interaction
+
+![Components Interaction Diagram](Assets/Components-Interaction.svg)
+
 ## Features
 
 - WSGI compliant application (works with Gunicorn, uWSGI, etc.)
@@ -134,6 +144,105 @@ gunicorn App.main:app --workers=4 --bind=0.0.0.0:8000
 
 Gunicorn is already included in the requirements.txt dependencies.
 
+## How the Framework Processes Requests
+
+When a client makes an HTTP request to your application, here's what happens:
+
+1. **Gunicorn receives the request** on localhost:8000
+2. **WhiteNoise checks** if it's a static file (CSS, JS, images)
+   - If yes → serves the file directly and returns
+   - If no → continues to middleware pipeline
+3. **Middleware Pipeline** processes the request:
+   - Request logging middleware records incoming request
+   - Execution time middleware starts the timer
+   - Error handling middleware wraps the handler
+   - Custom middlewares (Auth, Tokens, etc.) run
+4. **Router dispatches** the request to the matching handler
+5. **Handler (your code)** processes the request:
+   - Can call services for business logic
+   - Services can call repositories for data access
+   - Repositories use the ORM to query the database
+6. **Response creation** (options):
+   - Render HTML using Jinja2 templates
+   - Return JSON response
+   - Return plain text response
+7. **Middleware Pipeline (reverse)** processes the response:
+   - Response middlewares run in reverse order
+   - Execution time is logged
+   - Response is logged
+8. **Response is sent** back to the client with proper headers and status code
+
+## Core Concepts
+
+### Routing
+
+Define routes using decorators:
+```python
+@app.route('/users/<int:user_id>')
+def get_user(request):
+    return Response(body=f'User {user_id}')
+```
+
+The framework supports dynamic URL parameters with type conversion (int, str, etc).
+
+### Handlers
+
+Handlers receive a WebOb Request object and must return a Response object:
+```python
+def my_handler(request):
+    # Access request data
+    method = request.method
+    path = request.path
+    params = request.GET
+    post_data = request.POST
+    headers = request.headers
+    
+    # Return response
+    return Response(body='Hello World', status=200)
+```
+
+### Models
+
+Define data models using the ORM:
+```python
+class Book(Table):
+    id = PrimaryKey(int)
+    title = Column(str)
+    author = Column(str)
+    isbn = Column(str)
+```
+
+### Services
+
+Encapsulate business logic in service classes:
+```python
+class BookService:
+    @staticmethod
+    def get_all_books():
+        return BookRepository.find_all()
+    
+    @staticmethod
+    def create_book(title, author, isbn):
+        book = Book(title=title, author=author, isbn=isbn)
+        return BookRepository.save(book)
+```
+
+### Templates
+
+Use Jinja2 to render dynamic HTML:
+```html
+<!-- templates/book.html -->
+<h1>{{ book.title }}</h1>
+<p>by {{ book.author }}</p>
+<p>ISBN: {{ book.isbn }}</p>
+```
+
+In your handler:
+```python
+html = app.template('book.html', context={'book': book_obj})
+return Response(body=html)
+```
+
 ## Project Structure
 
 ```
@@ -166,6 +275,10 @@ tests/                            # Test suite
   ├── test_orm/                  # ORM tests
   └── test_orm/test_sqlite_orm.py
 ```
+
+## Data Flow Architecture
+
+![Data Flow Architecture Diagram](Assets/Dataflow-Arcthitecture.svg)
 
 ## Working with the ORM
 
