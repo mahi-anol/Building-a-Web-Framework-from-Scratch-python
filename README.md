@@ -8,7 +8,7 @@ This project is a complete implementation of a web framework written in pure Pyt
 
 ## Features
 
-- WSGI compliant application
+- WSGI compliant application (works with Gunicorn, uWSGI, etc.)
 - Dynamic routing with support for both class-based and function-based handlers
 - Built-in ORM for SQLite with support for models, relationships, and migrations
 - Middleware pipeline architecture
@@ -112,6 +112,27 @@ python app/wsgi_main.py
 ```
 
 The server will start at http://localhost:8000
+
+## Running with Gunicorn
+
+For production or more robust development, use Gunicorn as the WSGI application server:
+
+```bash
+gunicorn App.main:app --reload --bind=localhost:8000
+```
+
+This command:
+- Loads the application from `App/main.py` 
+- Enables auto-reload when code changes
+- Binds to localhost:8000
+
+You can also customize the number of workers and other Gunicorn options:
+
+```bash
+gunicorn App.main:app --workers=4 --bind=0.0.0.0:8000
+```
+
+Gunicorn is already included in the requirements.txt dependencies.
 
 ## Project Structure
 
